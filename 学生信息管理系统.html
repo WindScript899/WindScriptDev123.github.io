@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生信息管理系统</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+        }
+
+        /* 页面基础样式 */
+        body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* 头部标题 */
+        h1 {
+            color: #1e6bb8;
+            text-align: center;
+            margin: 30px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2d8cf0;
+            font-size: 28px;
+        }
+
+        /* 导航栏样式 */
+        .nav-wrapper {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            text-decoration: none;
+            color: #2d8cf0;
+            font-size: 16px;
+            padding: 10px 20px;
+            margin-right: 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background-color: #2d8cf0;
+            color: #fff;
+            border-color: #2d8cf0;
+        }
+
+        /* 通用区块样式 */
+        .section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            color: #1e6bb8;
+            font-size: 22px;
+            margin-bottom: 25px;
+            padding-left: 15px;
+            border-left: 4px solid #2d8cf0;
+        }
+
+        /* 截图区域样式 */
+        .screenshot-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: flex-start;
+        }
+
+        .screenshot-box img {
+            width: 180px;
+            height: auto; /* 保持图片比例，避免变形 */
+            border-radius: 8px;
+            border: 1px solid #e5e6eb;
+            transition: all 0.3s ease;
+            object-fit: cover;
+            cursor: pointer; /* 鼠标手型，提示可点击 */
+        }
+
+        .screenshot-box img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 关于软件区域样式 */
+        .about-content p {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .about-content h5 {
+            font-size: 15px;
+            color: #666;
+            margin: 8px 0 8px 25px;
+            font-weight: normal;
+        }
+
+        /* 下载区域样式 */
+        .download-btn {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #2d8cf0;
+            color: #fff;
+            font-size: 18px;
+            padding: 12px 30px;
+            border-radius: 8px;
+            margin: 10px 0 20px;
+            transition: all 0.3s ease;
+            border: 1px solid #2d8cf0;
+        }
+
+        .download-btn:hover {
+            background-color: #1e6bb8;
+            border-color: #1e6bb8;
+            transform: translateY(-2px);
+        }
+
+        .download-info {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 联系我们区域样式 */
+        .contact-info {
+            font-size: 16px;
+            color: #555;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* 新增：更新日志样式（优化排版，更整洁） */
+        .update-log {
+            font-size: 16px;
+            color: #555;
+            line-height: 2.0; /* 增大行高，更易阅读 */
+        }
+
+        .update-log h3 {
+            color: #1e6bb8;
+            font-size: 18px;
+            margin: 15px 0 20px;
+            font-weight: 600;
+        }
+
+        .update-log .log-item {
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+
+        /* 新增：截图弹窗样式（点击放大，无新窗口） */
+        .img-modal {
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定在视口 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* 半透明黑遮罩 */
+            z-index: 9999; /* 置顶显示 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 40px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #2d8cf0;
+        }
+
+        /* 响应式适配 - 手机端 */
+        @media (max-width: 768px) {
+            .screenshot-box {
+                justify-content: center;
+            }
+            
+            .section {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .nav-links a {
+                display: block;
+                margin-bottom: 10px;
+                margin-right: 0;
+                text-align: center;
+            }
+
+            /* 手机端弹窗关闭按钮调整 */
+            .close-btn {
+                font-size: 30px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>欢迎访问学生信息管理系统网站</h1>
+
+    <!-- 导航区域：补全更新日志锚点，对应完整版+简易版 -->
+    <div class="nav-wrapper">
+        <div class="nav-title">网站导航</div>
+        <div class="nav-links">
+            <a href="#section1">软件截图</a>
+            <a href="#section2">关于软件</a>
+            <a href="#section3">软件下载</a>
+            <a href="#section5">完整版更新日志</a>
+            <a href="#section6">简易版更新日志</a>
+            <a href="#section4">联系我们</a>
+        </div>
+    </div>
+
+    <!-- 软件截图区域：实现点击弹窗放大 -->
+    <div id="section1" class="section">
+        <h2>软件截图</h2>
+        <div class="screenshot-box">
+            <img src="登录.png" alt="登录界面" onclick="showModalImg('登录.png')" />
+            <img src="登陆欢迎.png" alt="登录欢迎界面" onclick="showModalImg('登陆欢迎.png')" />
+            <img src="内页.png" alt="系统内页" onclick="showModalImg('内页.png')" />
+            <img src="增.png" alt="添加学生信息" onclick="showModalImg('增.png')" />
+            <img src="删人.png" alt="删除学生信息" onclick="showModalImg('删人.png')" />
+            <img src="找人.png" alt="查询学生信息" onclick="showModalImg('找人.png')" />
+            <img src="改名.png" alt="修改学生信息" onclick="showModalImg('改名.png')" />
+        </div>
+    </div>
+
+    <!-- 关于软件区域 -->
+    <div id="section2" class="section">
+        <h2>关于软件</h2>
+        <div class="about-content">
+            <p>软件名称：学生信息管理系统</p>
+            <p>软件格式：exe文件</p>
+            <p>软件版本：V1.0</p>
+            <p>软件介绍</p>
+            <h5>这是一个基于python的学生信息管理系统</h5>
+            <h5>它仅能在windows系统下运行</h5>
+            <p>软件功能</p>
+            <h5>可以对学生信息进行增删改查</h5>
+            <h5>可以统计学生的个人信息</h5>
+        </div>
+    </div>
+
+    <!-- 软件下载区域 -->
+    <div id="section3" class="section">
+        <h2>完整版下载</h2>
+        <a href="学生信息管理系统 .zip" download class="download-btn">下载学生信息管理系统</a>
+        <p class="download-info">软件大小：76.9 MB</p>
+        <h2>简易版下载</h2>
+        <a href="学生信息管理系统（简易版）.zip" download class="download-btn">下载学生信息管理系统简易版</a>
+        <p class="download-info">软件大小：30.9 MB</p>
+    </div>
+
+    <!-- 完整版更新日志：优化排版，样式更整洁 -->
+    <div id="section5" class="section">
+        <h2>完整版学生信息管理系统更新日志</h2>
+        <div class="update-log">
+            <h3>• 更新版本：V1.0（初始版本）</h3>
+            <div class="log-item">• 更新日期：2026年1月24日</div>
+            <div class="log-item">• 核心功能：实现学生信息增、删、改、查基础操作</div>
+            <div class="log-item">• 系统适配：仅支持Windows系统运行，打包为exe格式，无需额外安装Python环境</div>
+            <div class="log-item">• 界面设计：简洁登录界面、欢迎页及功能内页，操作流程清晰</div>
+        </div>
+    </div>
+
+    <!-- 简易版更新日志：统一排版样式 -->
+    <div id="section6" class="section">
+        <h2>简易版学生信息管理系统更新日志</h2>
+        <div class="update-log">
+            <h3>• 更新版本：V1.0（初始版本）</h3>
+            <div class="log-item">• 更新日期：2026年1月5日</div>
+            <div class="log-item">• 核心功能：实现学生信息增、查基础操作</div>
+            <div class="log-item">• 系统适配：仅支持Windows系统运行，打包为exe格式，无需额外安装Python环境</div>
+            <div class="log-item">• 界面设计：简洁登录界面、欢迎页及功能内页，操作流程清晰</div>
+        </div>
+    </div>
+
+    <!-- 联系我们区域 -->
+    <div id="section4" class="section">
+        <h2>联系我们</h2>
+        <p class="contact-info">联系方式：152000000000</p>
+    </div>
+
+    <!-- 截图弹窗（隐藏，点击截图后显示） -->
+    <div class="img-modal" id="imgModal" onclick="closeModalImg()">
+        <span class="close-btn" onclick="closeModalImg()">&times;</span>
+        <img src="" alt="放大后的截图" class="modal-img" id="modalImgSrc">
+    </div>
+
+    <!-- JS：实现截图弹窗放大/关闭功能 -->
+    <script>
+        // 显示弹窗和大图
+        function showModalImg(imgSrc) {
+            const modal = document.getElementById("imgModal");
+            const modalImg = document.getElementById("modalImgSrc");
+            modal.style.display = "flex"; // 显示弹窗（flex布局居中）
+            modalImg.src = imgSrc; // 赋值大图地址
+        }
+
+        // 关闭弹窗
+        function closeModalImg() {
+            const modal = document.getElementById("imgModal");
+            modal.style.display = "none"; // 隐藏弹窗
+        }
+
+        // 按ESC键也可关闭弹窗（优化体验）
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                closeModalImg();
+            }
+        });
+    </script>
+</body>
+</html>
